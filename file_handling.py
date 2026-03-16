@@ -10,6 +10,35 @@ async def red_file1(file: UploadFile = File(...)):
       content = file._in_memory
       whole = await file.read()
       chunk = await file.read(1024)
+
+      """
+      MULTIPART: While a single file does have metadata (name, type), that isn't why the protocol 
+      is named "multipart." The name comes from the fact that the HTTP body is physically
+      divided into separate sections.
+      
+      1. What is the Multipart Parser?
+      Think of the multipart parser as a "sorting machine" for a messy delivery truck.
+      When a client sends a file, the HTTP request body isn't just the file bytes. 
+      It’s a single continuous stream of data containing:
+    
+        1.Boundary markers (unique strings used to separate parts).
+    
+        2.Form field names (e.g., "username").
+    
+        3.File metadata (filename, Content-Type).
+    
+        4.The actual binary content of the file.
+    
+      The multipart parser (specifically the python-multipart library that FastAPI uses 
+      under the hood) sits between the raw network socket and your code. Its job is to:
+    
+        1.Detect Boundaries: Find where one piece of data ends and the next begins.
+    
+        2.Extract Metadata: Pull out the filename and headers.
+    
+        3.Stream to Storage: Feed the binary chunks into the SpooledTemporaryFile.
+      """
+
       print(content)
       #
       #     Client
